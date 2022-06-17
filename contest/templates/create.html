@@ -1,0 +1,25 @@
+{%extends 'base.html' %}
+{%block title%}
+    Welcome to the Contest Platform
+{%endblock%}
+{%block content%}
+
+    <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-dark" style="color:white">
+        <!--<div class="col-md-5 p-lg-5 mx-auto my-5">-->
+            <h1 class="display-4 font-weight-normal">Create a Contest</h1>
+            <p class="lead font-weight-normal">Text here</p>
+            <!--<a class="btn btn-primary" href="{{ url_for('create_page') }}">Upload a File</a>-->
+        <form action="/create" method="POST" enctype="multipart/form-data">
+            <label>Select File</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" id="file">
+                <label class="custom-file-label" for="file">Select file...</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload Image</button>
+
+        </form>
+        </div>
+        <div class="product-device box-shadow d-none d-md-block"></div>
+        <div class="product-device product-device-2 box-shadow d-none d-md-block"></div>
+    <!--</div>--
+{%endblock%}
