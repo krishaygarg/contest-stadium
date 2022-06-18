@@ -34,9 +34,11 @@ class User(db.Model,UserMixin):
         return f'User {self.username}'
 class Contests(db.Model):
     id=db.Column(db.Integer(),primary_key=True)
+    name=db.Column(db.String(),nullable=False)
     owner = db.Column(db.Integer(),db.ForeignKey('user.id'))
     type=db.Column(db.String(),nullable=False)
     questions=db.relationship('Questions',backref='owned_contest',lazy=True)
+    setup=db.Column(db.Integer())
 
 class Questions(db.Model):
     id=db.Column(db.Integer(),primary_key=True)

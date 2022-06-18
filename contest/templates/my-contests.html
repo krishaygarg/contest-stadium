@@ -8,7 +8,11 @@
         <!--<div class="col-md-5 p-lg-5 mx-auto my-5">-->
 <div>
             <h1 class="display-4 font-weight-normal">My Contests</h1>
-            <p class="lead font-weight-normal">Text here</p>
+
+    <form method="POST">
+            {{CreateNewForm.hidden_tag()}}
+              {{CreateNewForm.submit(class="btn btn-primary")}}
+          </form>
 
             <!--<a class="btn btn-primary" href="{{ url_for('my_contests_page') }}">Upload a File</a>-->
         <!--<form action="/create" method="POST" enctype="multipart/form-data">
@@ -25,5 +29,16 @@
 
         <div class="product-device box-shadow d-none d-md-block"></div>
         <div class="product-device product-device-2 box-shadow d-none d-md-block"></div>
-    <!--</div>--
+    <!--</div>-->
+{%for contest in ownedcontests %}
+{%set link='create/'~contest.id%}
+                    <div class="col-nd-6">
+                        <div style="margin-bottom: 5px" class="card text-center bg-dark">
+                            <div class="card-body">
+                                 <h5 class="card-title">{{contest.name}}</h5>
+                                <a class="btn btn-primary" href="{{link}}">Edit</a>
+                        </div>
+                    </div>
+                    </div>
+                {%endfor%}
 {%endblock%}

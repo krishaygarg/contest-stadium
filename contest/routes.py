@@ -1,6 +1,6 @@
 from contest import app, models,forms,db
-from contest.forms import LoginForm, RegisterForm
-from contest.models import User
+from contest.forms import LoginForm, RegisterForm,CreateNewForm
+from contest.models import User,Contests
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
 import os
@@ -14,15 +14,18 @@ def home_page():
 #app.config['UPLOAD_FOLDER']="/uploads"
 
 @app.route("/my-contests", methods=["GET","POST"])
+@login_required
 def my_contests_page():
     if request.method=="POST":
-        if request.files:
-            file=request.files['file']
-            #file.save(os.path.join(app.config['UPLOAD_FOLDER']),file.filename)
-            return redirect(request.url)
-
-
-    return render_template("my-contests.html")
+        contesttocreate=Contests(name="New Contest", owner=current_user.id,type="",setup=1)
+        db.session.add(contesttocreate)
+        db.session.commit()
+        current=Contests.query.filter_by(setup=1).first().id
+        Contests.query.filter_by(setup=1).first().setup=0
+        db.session.commit()
+        return redirect(f"/create/{current}")
+    ownedcontests=Contests.query.filter_by(owner=current_user.id)
+    return render_template("my-contests.html",ownedcontests=ownedcontests,CreateNewForm=CreateNewForm())
 @app.route("/register", methods=['GET','POST'])
 def register_page():
     form=RegisterForm()
@@ -56,3 +59,6 @@ def logout_page():
     logout_user()
     flash("You have been successfully logged out!", category="info")
     return redirect(url_for("home_page"))
+@app.route("/create/<contestid>")
+def create_page(contestid):
+    return render_template('create.html', contestid=contestid)
