@@ -19,7 +19,7 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mr-auto">
-    <li class="nav-item active">
+    <li class="nav-item">
         <a class="nav-link" href="{{url_for('home_page')}}">Home <span class="sr-only">(current)</span></a>
     </li>
     <li class="nav-item">
@@ -31,12 +31,7 @@
     </li>
 </ul>
        {% if current_user.is_authenticated %}
-      <ul class="navbar-nav">
-          <li class="nav-item">
-              <a class="nav-link" style="color: lawngreen; font-weight:bold">
-                  &#x1F4B0; ${{current_user.prettier_budget}}
-              </a>
-    </li>
+
       <ul class="navbar-nav">
           <li class="nav-item">
         <a class="nav-link"> {{current_user.username}}</a>

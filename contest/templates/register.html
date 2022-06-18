@@ -8,7 +8,7 @@ Register Page
 <div class="container">
     <form method="POST" class=form-register" style="color:white">
         {{form.hidden_tag()}}
-        <img class="mb-4" src="https://i.imgur.com/n0r0W7Y.png" alt="">
+        <img class="mb-4" src="" alt="">
             <h1 class="h3 mb-3 font-weight-normal">
                 Please Create your Account
             </h1>
@@ -22,13 +22,13 @@ Register Page
 {{form.password2.label()}}
 {{form.password2(class="form-control",placeholder="Confirm Password")}}
         <br>
-        <div class="checkbox mb-3">
+
+        {{form.submit(class="btn btn-lg btn-block btn-primary")}}
+        <br><br>
+<div class="checkbox mb-3">
                <h6>Already have an account?</h6>
                <a class="btn btn-sm btn-secondary" href="{{ url_for('login_page') }}">Login</a>
             </div>
-        {{form.submit(class="btn btn-lg btn-block btn-primary")}}
-        <br>
-
 
 </form>
     </div>
