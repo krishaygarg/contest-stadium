@@ -7,7 +7,8 @@ import os
 @app.route("/")
 @app.route("/home")
 def home_page():
-    return render_template("home.html")
+    users=User.query.all()
+    return render_template("home.html",users=users)
 
 #app.config['UPLOAD_FOLDER']="/Users/Krishay/PycharmProjects/contestplatform/contest/uploads"
 #app.config['UPLOAD_FOLDER']="/uploads"
