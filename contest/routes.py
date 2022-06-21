@@ -1,6 +1,6 @@
 from contest import app, models,forms,db
-from contest.forms import LoginForm, RegisterForm,CreateNewForm
-from contest.models import User,Contests
+from contest.forms import LoginForm, RegisterForm,CreateNewForm, MoreOptionsForm,DeleteForm, QuestionForm
+from contest.models import User,Contests, Questions
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
 import os
@@ -25,6 +25,8 @@ def my_contests_page():
         db.session.commit()
         return redirect(f"/create/{current}")
     ownedcontests=Contests.query.filter_by(owner=current_user.id)
+
+    #print(type(ownedcontests))
     return render_template("my-contests.html",ownedcontests=ownedcontests,CreateNewForm=CreateNewForm())
 @app.route("/register", methods=['GET','POST'])
 def register_page():
@@ -59,6 +61,75 @@ def logout_page():
     logout_user()
     flash("You have been successfully logged out!", category="info")
     return redirect(url_for("home_page"))
-@app.route("/create/<contestid>")
+@app.route("/create/<contestid>", methods=['GET','POST'])
 def create_page(contestid):
-    return render_template('create.html', contestid=contestid)
+
+    contest = Contests.query.filter_by(id=contestid).first()
+
+    if contest:
+        if request.method == "POST":
+            qtocreate = Questions(type="",contest=contest.id, setup=1,position=len(Questions.query.all()))
+            db.session.add(qtocreate)
+            db.session.commit()
+            current = Questions.query.filter_by(setup=1).first().id
+            Questions.query.filter_by(setup=1).first().setup = 0
+            db.session.commit()
+            return redirect(f"/question/{current}")
+        else:
+            pass
+        questions=Questions.query.filter_by(contest=contest.id)
+        return render_template('create.html',CreateNewForm=CreateNewForm(),contest=contest,questions=questions,
+                               length=len(Questions.query.all()),Questions=Questions)
+    else:
+        return render_template('not-found.html')
+@app.route("/question/<questionid>", methods=['GET','POST'])
+def question_page(questionid):
+    form=QuestionForm()
+    if request.method=="POST":
+            q = form.question.data
+            answer = form.answer.data
+            question = Questions.query.filter_by(id=questionid).first()
+            if q is not None:
+                if question.type=="Text":
+                    question.question=q
+                    db.session.commit()
+                    return redirect(f'/create/{Contests.query.filter_by(id=question.contest).first().id}')
+                if question.type=="Free Response Question":
+                    question.question=q
+                    question.answer=answer
+                    db.session.commit()
+                    return redirect(f'/create/{Contests.query.filter_by(id=question.contest).first().id}')
+                return render_template('base.html')
+            dd=request.form.get("dropdown")
+            if dd in ["Text", "Free Response Question"]:
+                question = Questions.query.filter_by(id=questionid).first()
+                question.type=dd
+                db.session.commit()
+                return render_template('question.html', form=form, question=question)
+    else:
+        question = Questions.query.filter_by(id=questionid).first()
+        if Contests.query.filter_by(id=question.contest).first().owner==current_user.id:
+            return render_template('question.html', form=form,question=question)
+        else:
+            return render_template('not-found.html')
+
+@app.route("/moreoptions/<contestid>",methods=['GET','POST'])
+def moreoptions_page(contestid):
+    form=MoreOptionsForm()
+    delete_form=DeleteForm()
+    if form.validate_on_submit():
+        torename=Contests.query.filter_by(id=contestid).first()
+        if torename:
+            Contests.query.filter_by(id=contestid).first().name=form.rename.data
+        db.session.commit()
+        return redirect(url_for("my_contests_page"))
+
+    if delete_form.validate_on_submit():
+        deleted_contest=request.form.get('deleted-contest')
+        deleted_contest=Contests.query.filter_by(id=deleted_contest).first()
+        if deleted_contest:
+            db.session.delete(deleted_contest)
+            db.session.commit()
+        return redirect(url_for("my_contests_page"))
+    contest = Contests.query.filter_by(id=contestid).first()
+    return render_template('moreoptions.html', contest=contest,form=form,Contests=Contests,delete_form=delete_form)

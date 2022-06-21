@@ -1,0 +1,32 @@
+{%extends 'base.html' %}
+{%block title%}
+    Options
+{%endblock%}
+{%block content %}
+<h2>More Options</h2>
+<div class="container">
+
+    <form method="POST" class=form-register" style="color:white">
+
+        {{form.hidden_tag()}}
+
+        <br>
+
+{{form.rename.label()}}
+{{form.rename(class="form-control",value=contest.name)}}
+
+
+        <br>
+        {{form.save(class="btn btn-lg btn-block btn-primary")}}
+        <br>
+
+
+</form>
+
+{%include 'includes/deletemodal.html'%}
+ <button class="btn btn-outline btn-danger" data-toggle="modal" data-target="#Modal-Delete-{{contest.id}}">Delete</button>
+
+</div>
+
+{%endblock%}
+

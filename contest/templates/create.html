@@ -2,4 +2,58 @@
 {%block title%}
     Create Contest
 {%endblock%}
+{%block content%}
+<div class="container">
+    <h3>{{contest.name}}</h3>
+    <div class="text-center">
+ <div class="col-nd-6">
+                        <div style="margin-bottom: 5px" class="card bg-dark">
+                            <div class="card-body">
+
+
+<div class="row" style="margin-top:10px; margin-left:20px;">
+                                        <div class="col-1">Position</div>
+                                      <div class="col-2">Question Type</div>
+                                        <div class="col-7">Question</div>
+                                        <div class="col-2">Answer</div>
+
+
+</div>
+
+                        </div>
+                    </div>
+                    </div>
+<!--    <div class="row">-->
+                {%for x in range(length) %}
+                {%set question=Questions.query.filter_by(position=x).first()%}
+
+                    <div class="col-nd-6">
+                        <div style="margin-bottom: 5px" class="card bg-dark">
+                            <div class="card-body">
+
+
+<div class="row" style="margin-top:10px; margin-left:20px;">
+                                        <div class="col-1">{{question.position}}</div>
+                                      <div class="col-2"> {{question.type}}</div>
+                                        <div class="col-7">{{question.question}}</div>
+                                       {%if question.type!="Text" %} <div class="col-2">{{question.answer}}</div> {%endif%}
+
+
+</div>
+
+                        </div>
+                    </div>
+                    </div>
+                {%endfor%}
+        <form method="POST">
+            {{CreateNewForm.hidden_tag()}}
+              {{CreateNewForm.submit(class="btn btn-primary")}}
+          </form>
+            </div>
+<!--        </div>-->
+
+</div>
+
+</div>
+{%endblock%}
 

@@ -1,0 +1,42 @@
+{%extends 'base.html' %}
+{%block title%}
+    Create Question
+{%endblock%}
+{%block content%}
+<body class="text-left">
+<div class="container">
+    <form method="POST" class=form-register" style="color:white">
+        <p>Element Type:</p>
+        <select name = "dropdown">
+            <option value = "Text">Text</option>
+            <option value = "Free Response Question">Free Response Question</option>
+         </select>
+
+        <button type="submit" class="btn btn-primary">Go</button>
+
+
+    </form>
+
+
+    <form method="POST" class=form-register" style="color:white">
+        {%if question.type=="Text" %}
+        <p>Enter Text: </p>
+        {{form.question(class="form-control",placeholder="Text")}}
+        <br>
+        {{form.submit(class="btn btn-lg btn-block btn-primary")}}
+        {%endif%}
+        {%if question.type=="Free Response Question" %}
+        <p>Enter Question: </p>
+        {{form.question(class="form-control",placeholder="Question")}}
+        <p>Enter Answer: </p>
+        {{form.answer(class="form-control",placeholder="Answer")}}
+
+        <br>
+        {{form.submit(class="btn btn-lg btn-block btn-primary")}}
+        {%endif%}
+    </form>
+
+
+</div>
+</body>
+{%endblock%}

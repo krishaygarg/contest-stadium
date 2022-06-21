@@ -27,3 +27,15 @@ class LoginForm(FlaskForm):
 
 class CreateNewForm(FlaskForm):
     submit = SubmitField(label="+ Create New")
+
+class MoreOptionsForm(FlaskForm):
+    rename = StringField(label="Rename", validators=[DataRequired()])
+    save = SubmitField(label="Save")
+
+class DeleteForm(FlaskForm):
+    delete=SubmitField(label="Delete")
+
+class QuestionForm(FlaskForm):
+    question=StringField(label=None, validators=[DataRequired()])
+    answer = StringField(label=None)
+    submit=SubmitField(label="Save")

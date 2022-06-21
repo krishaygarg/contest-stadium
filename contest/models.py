@@ -40,12 +40,15 @@ class Contests(db.Model):
     questions=db.relationship('Questions',backref='owned_contest',lazy=True)
     setup=db.Column(db.Integer())
 
+
+
 class Questions(db.Model):
     id=db.Column(db.Integer(),primary_key=True)
     type=db.Column(db.String(),nullable=False)
     question=db.Column(db.String())
-    answer=db.Column(db.Integer())
+    answer=db.Column(db.String())
     contest=db.Column(db.Integer(),db.ForeignKey('contests.id'))
+    setup=db.Column(db.Integer())
+    position=db.Column(db.Integer(),nullable=False)
 
-db.create_all()
 
