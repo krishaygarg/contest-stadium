@@ -68,7 +68,7 @@ def create_page(contestid):
 
     if contest:
         if request.method == "POST":
-            qtocreate = Questions(type="",contest=contest.id, setup=1,position=len(Questions.query.all()))
+            qtocreate = Questions(type="",contest=contest.id, setup=1,position=Questions.query.filter_by(contest=contest.id).count())
             db.session.add(qtocreate)
             db.session.commit()
             current = Questions.query.filter_by(setup=1).first().id
@@ -78,8 +78,8 @@ def create_page(contestid):
         else:
             pass
         questions=Questions.query.filter_by(contest=contest.id)
-        return render_template('create.html',CreateNewForm=CreateNewForm(),contest=contest,questions=questions,
-                               length=len(Questions.query.all()),Questions=Questions)
+        return render_template('create.html',CreateNewForm=CreateNewForm(),contest=contest,questions=questions, Questions=Questions,
+                               length=(Questions.query.filter_by(contest=contest.id)).count())
     else:
         return render_template('not-found.html')
 @app.route("/question/<questionid>", methods=['GET','POST'])
