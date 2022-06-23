@@ -1,5 +1,6 @@
 from contest import app, models,forms,db
-from contest.forms import LoginForm, RegisterForm,CreateNewForm, MoreOptionsForm,DeleteForm, QuestionForm
+from contest.forms import LoginForm, RegisterForm,CreateNewForm, MoreOptionsForm,DeleteForm, QuestionForm,MoveUpForm
+from contest.forms import MoveDownForm
 from contest.models import User,Contests, Questions
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
@@ -63,32 +64,60 @@ def logout_page():
     return redirect(url_for("home_page"))
 @app.route("/create/<contestid>", methods=['GET','POST'])
 def create_page(contestid):
-
+    MoveUp=MoveUpForm()
+    MoveDown=MoveDownForm()
     contest = Contests.query.filter_by(id=contestid).first()
 
     if contest:
         if request.method == "POST":
-            qtocreate = Questions(type="",contest=contest.id, setup=1,position=Questions.query.filter_by(contest=contest.id).count())
-            db.session.add(qtocreate)
-            db.session.commit()
-            current = Questions.query.filter_by(setup=1).first().id
-            Questions.query.filter_by(setup=1).first().setup = 0
-            db.session.commit()
-            return redirect(f"/question/{current}")
-        else:
+
+            if MoveUp.submit2.data and MoveUp.validate():
+                tomoveup=int(request.form.get('tomoveup'))
+                Questions.query.filter_by(position=tomoveup).first().position-=1
+                Questions.query.filter_by(position=tomoveup-1).first().position+=1
+                db.session.commit()
+                return redirect(request.url)
+            if MoveDown.submit3.data and MoveDown.validate():
+                tomovedown = int(request.form.get('tomovedown'))
+                Questions.query.filter_by(position=tomovedown).first().position += 1
+                Questions.query.filter_by(position=tomovedown + 1).first().position -= 1
+                db.session.commit()
+                return redirect(request.url)
+            if CreateNewForm().submit1.data and CreateNewForm().validate():
+                qtocreate = Questions(type="",contest=contest.id, setup=1,position=Questions.query.filter_by(contest=contest.id).count(),
+                                      question="", answer="")
+                db.session.add(qtocreate)
+                db.session.commit()
+                current = Questions.query.filter_by(setup=1).first().id
+                Questions.query.filter_by(setup=1).first().setup = 0
+                db.session.commit()
+                return redirect(f"/question/{current}")
+        if request.method=="GET":
             pass
         questions=Questions.query.filter_by(contest=contest.id)
         return render_template('create.html',CreateNewForm=CreateNewForm(),contest=contest,questions=questions, Questions=Questions,
-                               length=(Questions.query.filter_by(contest=contest.id)).count())
+                               length=(Questions.query.filter_by(contest=contest.id)).count(),MoveUp=MoveUp,MoveDown=MoveDown)
     else:
         return render_template('not-found.html')
 @app.route("/question/<questionid>", methods=['GET','POST'])
 def question_page(questionid):
     form=QuestionForm()
+    delete_form=DeleteForm()
+    question = Questions.query.filter_by(id=questionid).first()
     if request.method=="POST":
+            if delete_form.validate_on_submit():
+                deleted_question = request.form.get('deleted-question')
+                deleted_question = Questions.query.filter_by(id=deleted_question).first()
+                if deleted_question:
+
+                    for element in Questions.query.filter_by(contest=deleted_question.contest):
+                        element.position-=1
+                    db.session.delete(deleted_question)
+                    db.session.commit()
+                return redirect(f"/create/{Contests.query.filter_by(id=question.contest).first().id}")
             q = form.question.data
             answer = form.answer.data
-            question = Questions.query.filter_by(id=questionid).first()
+
             if q is not None:
                 if question.type=="Text":
                     question.question=q
@@ -105,11 +134,11 @@ def question_page(questionid):
                 question = Questions.query.filter_by(id=questionid).first()
                 question.type=dd
                 db.session.commit()
-                return render_template('question.html', form=form, question=question)
+                return render_template('question.html', form=form, question=question, delete_form=delete_form)
     else:
         question = Questions.query.filter_by(id=questionid).first()
         if Contests.query.filter_by(id=question.contest).first().owner==current_user.id:
-            return render_template('question.html', form=form,question=question)
+            return render_template('question.html', form=form,question=question,delete_form=delete_form)
         else:
             return render_template('not-found.html')
 

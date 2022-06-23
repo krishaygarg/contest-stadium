@@ -12,11 +12,12 @@
 
 
 <div class="row" style="margin-top:10px; margin-left:20px;">
-                                        <div class="col-1">Position</div>
+
                                       <div class="col-2">Question Type</div>
                                         <div class="col-6">Question</div>
                                         <div class="col-2">Answer</div>
                                     <div class="col-1">Edit</div>
+                                    <div class="col-1">Move</div>
 
 
 </div>
@@ -35,13 +36,37 @@
 
 
 <div class="row" style="margin-top:10px; margin-left:20px;">
-                                        <div class="col-1">{{question.position+1}}</div>
+
                                       <div class="col-2"> {{question.type}}</div>
                                         <div class="col-6">{{question.question}}</div>
                                        {%if question.type!="Text" %} <div class="col-2">{{question.answer}}</div>
                                         {%else%}<div class="col-2"></div>
     {%endif%}
     <div class="col-1"><a class="btn btn-primary" href="{{link2}}">Edit</a></div>
+
+    <div class="col-1">
+        {%if x!=0%}
+        <form method="POST">
+            {{MoveUp.hidden_tag()}}
+            <input id="tomoveup" name="tomoveup" type="hidden" value={{question.position}}>
+              {{MoveUp.submit2(class="btn btn-primary")}}
+          </form>
+        {%endif%}
+        {%if x!=length-1%}
+        <form method="POST">
+            {{MoveDown.hidden_tag()}}
+            <input id="tomovedown" name="tomovedown" type="hidden" value={{question.position}}>
+              {{MoveDown.submit3(class="btn btn-primary")}}
+          </form>
+        {%endif%}
+
+
+<!--        <a class="btn btn-primary" href="{{link2}}">&#x2191-->
+<!--    -->
+<!--    </a>-->
+<!--    <a class="btn btn-primary" href="{{link2}}">&#x2193</a>-->
+    </div>
+
 
 
 </div>
@@ -52,7 +77,7 @@
                 {%endfor%}
         <form method="POST">
             {{CreateNewForm.hidden_tag()}}
-              {{CreateNewForm.submit(class="btn btn-primary")}}
+              {{CreateNewForm.submit1(class="btn btn-primary")}}
           </form>
             </div>
 <!--        </div>-->
@@ -60,5 +85,11 @@
 </div>
 
 </div>
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
 {%endblock%}
+
 

@@ -26,7 +26,7 @@ class LoginForm(FlaskForm):
     submit=SubmitField(label="Sign in")
 
 class CreateNewForm(FlaskForm):
-    submit = SubmitField(label="+ Create New")
+    submit1 = SubmitField(label="+ Create New")
 
 class MoreOptionsForm(FlaskForm):
     rename = StringField(label="Rename", validators=[DataRequired()])
@@ -39,3 +39,9 @@ class QuestionForm(FlaskForm):
     question=StringField(label=None, validators=[DataRequired()])
     answer = StringField(label=None)
     submit=SubmitField(label="Save")
+
+class MoveUpForm(FlaskForm):
+    submit2 = SubmitField(label="\U00002191")
+
+class MoveDownForm(FlaskForm):
+    submit3 = SubmitField(label="\U00002193")

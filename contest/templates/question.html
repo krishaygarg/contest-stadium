@@ -8,8 +8,16 @@
     <form method="POST" class=form-register" style="color:white">
         <p>Element Type:</p>
         <select name = "dropdown">
+            {% if question.type=="Text"%}
+            <option value = "Text" selected>Text</option>
+            {%else%}
             <option value = "Text">Text</option>
+            {%endif%}
+            {% if question.type=="Free Response Question"%}
+            <option value = "Free Response Question" selected>Free Response Question</option>
+            {%else%}
             <option value = "Free Response Question">Free Response Question</option>
+            {%endif%}
          </select>
 
         <button type="submit" class="btn btn-primary">Go</button>
@@ -21,20 +29,23 @@
     <form method="POST" class=form-register" style="color:white">
         {%if question.type=="Text" %}
         <p>Enter Text: </p>
-        {{form.question(class="form-control",placeholder="Text")}}
+        {{form.question(class="form-control",value=question.question)}}
         <br>
         {{form.submit(class="btn btn-lg btn-block btn-primary")}}
         {%endif%}
         {%if question.type=="Free Response Question" %}
         <p>Enter Question: </p>
-        {{form.question(class="form-control",placeholder="Question")}}
+        {{form.question(class="form-control",value=question.question)}}
         <p>Enter Answer: </p>
-        {{form.answer(class="form-control",placeholder="Answer")}}
+        {{form.answer(class="form-control",value=question.answer)}}
 
         <br>
         {{form.submit(class="btn btn-lg btn-block btn-primary")}}
         {%endif%}
     </form>
+
+    {%include 'includes/deleteqmodal.html'%}
+ <button class="btn btn-outline btn-danger" data-toggle="modal" data-target="#Modal-Delete-{{question.id}}">Delete</button>
 
 
 </div>
