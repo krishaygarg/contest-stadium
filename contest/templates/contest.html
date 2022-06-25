@@ -32,7 +32,7 @@
             <h3>{{contest.code}}</h3>
             <br>
             <h5>Contest Link:</h5>
-            <h3><a href={{"contest-stadium.herokuapp.com/join/"~contest.code}}>{{"contest-stadium.herokuapp.com/join/"~contest.code}}</a>
+            <h3><a href={{"/join/"~contest.code}} target="_blank">{{"contest-stadium.herokuapp.com/join/"~contest.code}}</a>
             </h3>
             <br><br>
             {{Release.Publish(class="btn btn-primary")}}
