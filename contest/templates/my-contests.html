@@ -30,6 +30,7 @@
 {%for contest in ownedcontests %}
 {%set link='create/'~contest.id%}
 {%set link2='moreoptions/'~contest.id%}
+{%set link3='contest/'~contest.id~"/release"%}
 
                     <div class="col-nd-6">
                         <div style="margin-bottom: 5px" class="card bg-dark">
@@ -39,7 +40,7 @@
 <div class="row" style="margin-top:10px; margin-left:20px;">
                                       <div class="col-8">  <h4 class="card-text" data-align="center">{{contest.name}}</h4></div>
                                         <div class="col-1"><a class="btn btn-primary" data-align="right" href="{{link}}">Edit</a></div>
-                                        <div class="col-1"><a class="btn btn-primary" data-align="right" href="#">Contest</a></div>
+                                        <div class="col-1"><a class="btn btn-primary" data-align="right" href="{{link3}}">Contest</a></div>
                                         <div class="col-2"><a class="btn btn-primary" href="{{link2}}">More Options</a></div>
 </div>
 

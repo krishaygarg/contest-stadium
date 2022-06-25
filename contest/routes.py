@@ -1,9 +1,10 @@
 from contest import app, models,forms,db
 from contest.forms import LoginForm, RegisterForm,CreateNewForm, MoreOptionsForm,DeleteForm, QuestionForm,MoveUpForm
-from contest.forms import MoveDownForm
+from contest.forms import MoveDownForm, ReleaseForm
 from contest.models import User,Contests, Questions
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
+import random
 import os
 @app.route("/")
 @app.route("/home")
@@ -162,3 +163,27 @@ def moreoptions_page(contestid):
         return redirect(url_for("my_contests_page"))
     contest = Contests.query.filter_by(id=contestid).first()
     return render_template('moreoptions.html', contest=contest,form=form,Contests=Contests,delete_form=delete_form)
+codedisplay=False
+@app.route("/contest/<contestid>/<page>",methods=['GET','POST'])
+def contest_page(contestid,page):
+    Release=ReleaseForm()
+    contest=Contests.query.filter_by(id=contestid).first()
+    if contest.code is None:
+        released=False
+    else:
+        released=True
+
+    if Release.Open.data and Release.validate():
+        code=random.randint(100000,999999)
+        while Contests.query.filter_by(code=str(code)).count()>0:
+            code = random.randint(100000, 999999)
+        contest.code=code
+        db.session.commit()
+        return redirect(f"/contest/{contestid}/release")
+    if Release.Close.data and Release.validate():
+        contest.code = None
+        db.session.commit()
+        return redirect(f"/contest/{contestid}/release")
+
+
+    return render_template('contest.html',page=page,contest=contest,Release=Release,released=released,codedisplay=codedisplay)

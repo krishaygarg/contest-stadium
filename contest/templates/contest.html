@@ -1,0 +1,64 @@
+{%extends 'base.html' %}
+{%block title%}
+    Contest
+{%endblock%}
+{%block style%}
+.ntab{
+           border-color: white;background-color:#000000;color:white; }
+.activetab {border-bottom-color: transparent;background-color:#0000ee; color:white}
+{%endblock%}
+{%block content%}
+{%set releaselink="/contest/"~contest.id~"/release"%}
+{%set resultslink="/contest/"~contest.id~"/results"%}
+{%if page=="release"%}
+    <ul class="nav nav-tabs tab">
+  <li class="active">
+    <a class="activetab nav-link" href=releaselink>Release</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link ntab" href="{{resultslink}}">Results</a>
+  </li>
+    </ul>
+<br>
+        <div class="container">
+            {%if released==True%}
+<!--            <h3>Generate Contest Code</h3>-->
+<!--            <br>-->
+<!--            <h3>Generate Contest Link</h3>-->
+<!--            <br>-->
+        <form method="POST">
+            {{Release.hidden_tag()}}
+            <h5>Contest Code:</h5>
+            <h3>{{contest.code}}</h3>
+            <br>
+            <h5>Contest Link:</h5>
+            <h3><a href={{"contest-stadium.herokuapp.com/join/"~contest.code}}>{{"contest-stadium.herokuapp.com/join/"~contest.code}}</a>
+            </h3>
+            <br><br>
+            {{Release.Publish(class="btn btn-primary")}}
+            <br><br><br>
+              {{Release.Close(class="btn btn-danger")}}
+          </form>
+
+            {%elif released==False%}
+            <h3>Your contest is currently not accepting submissions.</h3>
+            <form method="POST">
+            {{Release.hidden_tag()}}
+              {{Release.Open(class="btn btn-primary")}}
+          </form>
+            {%endif%}
+        </div>
+        {%elif page =="results"%}
+        <ul class="nav nav-tabs tab">
+  <li class="nav-item">
+    <a class="nav-link ntab" href="{{releaselink}}">Release</a>
+  </li>
+  <li class="active">
+    <a class="activetab nav-link" href="{{resultslink}}">Results</a>
+  </li>
+
+
+        {%endif%}
+
+</ul>
+{%endblock%}

@@ -45,3 +45,9 @@ class MoveUpForm(FlaskForm):
 
 class MoveDownForm(FlaskForm):
     submit3 = SubmitField(label="\U00002193")
+
+class ReleaseForm(FlaskForm):
+    Open=SubmitField(label="Open Contest")
+    Close=SubmitField(label="Close Contest")
+
+    Publish=SubmitField(label="Publish to the Collection")
