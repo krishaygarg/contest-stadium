@@ -13,7 +13,15 @@
         <br>
 
 {{form.rename.label()}}
-{{form.rename(class="form-control",value=contest.name)}}
+{{form.rename(class="form-control",value=contest.name)}}<br>
+        {{form.timehrs.label()}}
+<div class="d-flex flex-row">
+  <div class="p-2" style="width: 7%">{{form.timehrs(class="form-control",value="%02d"%(contest.time/3600)|int)}}</div>
+    <div class="w-5 p-2"style="width: 1%">:</div>
+  <div class="w-1 p-2"style="width: 7%">{{form.timemins(class="form-control",value="%02d"%(((contest.time-contest.time%60)/60)%60,))}}</div>
+    <div class="w-1 p-2"style="width: 1%">:</div>
+  <div class="w-1 p-2"style="width: 7%">{{form.timesecs(class="form-control",value="%02d"%(contest.time%60,))}}</div>
+</div>
 
 
         <br>

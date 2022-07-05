@@ -42,6 +42,7 @@ class Contests(db.Model):
     questions=db.relationship('Questions',backref='owned_contest',lazy=True)
     results = db.relationship('Results', backref='owned_contest', lazy=True)
     setup=db.Column(db.Integer())
+    time=db.Column(db.Integer(),nullable=False)
 
 
 
@@ -58,13 +59,14 @@ class Questions(db.Model):
 class Results(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     user=db.Column(db.Integer(),db.ForeignKey('user.id'))
-    firstname=db.Column(db.String())
-    lastname=db.Column(db.String())
-    email=db.Column(db.String())
+    firstname=db.Column(db.String(),nullable=False)
+    lastname=db.Column(db.String(),nullable=False)
+    email=db.Column(db.String(),nullable=False)
     submission=db.Column(db.String())
     result=db.Column(db.String())
     contest = db.Column(db.Integer(), db.ForeignKey('contests.id'))
     score=db.Column(db.Integer())
+    endtime=db.Column(db.BigInteger())
     # correct=db.relationship('Questions',backref='correct',lazy=True)
     # incorrect = db.relationship('Questions', backref='incorrect', lazy=True)
     # unanswered=db.relationship('Questions',backref='unanswered',lazy=True)

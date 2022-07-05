@@ -2,13 +2,16 @@
 {%block title%}
 {{contest.name}}
 {%endblock%}
+{%block jq%}
 
+{%endblock%}
 {%block content%}
     <br>
 
-    <div class='container'>
+    <div class="row" style="margin-top:20px; margin-left:3px;">
+        <div class="col-10">
         <h3>{{contest.name}}</h3>
-        <form method="POST">
+        <form method="POST" id="contestForm">
             {%set ctr=namespace(value=0)%}
         {% for x in range(Questions.query.filter_by(contest=contest.id).count()) %}
         {% set question=Questions.query.filter_by(contest=contest.id,position=x).first()%}
@@ -37,8 +40,48 @@
 
       {%endfor%}
             <br>
-                    {{form.submit(class="btn btn-lg btn-block btn-primary")}}
+                    {{form.submit1(class="btn btn-lg btn-block btn-primary")}}
 
         </form>
     </div>
+<div class="col-2">
+    <br><br>
+    Time Remaining:
+<h5 id="demo"></h5>
+</div>
+</div>
+
+
+<script>
+// Set the date we're counting down to
+
+var countDownDate = {{result.endtime}};
+
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  // Get today's date and time
+  var now = (new Date().getTime());
+
+  // Find the distance between now and the count down date
+  var distance = countDownDate - now;
+
+  // Time calculations for days, hours, minutes and seconds
+  var hours = Math.floor(distance / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Display the result in the element with id="demo"
+  document.getElementById("demo").innerHTML = hours + "h "
+  + minutes + "m " + seconds + "s ";
+
+  // If the count down is finished, write some text
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("contestForm").submit();
+    document.getElementById("demo").innerHTML = "EXPIRED";
+
+  }
+}, 1000);
+</script>
 {%endblock%}

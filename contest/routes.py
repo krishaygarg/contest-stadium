@@ -5,7 +5,7 @@ from contest.models import User,Contests, Questions, Results
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
 from wtforms import StringField
-import random
+import random, time
 import os
 @app.route("/")
 @app.route("/home")
@@ -20,7 +20,7 @@ def home_page():
 @login_required
 def my_contests_page():
     if request.method=="POST":
-        contesttocreate=Contests(name="New Contest", owner=current_user.id,type="",setup=1)
+        contesttocreate=Contests(name="New Contest", owner=current_user.id,type="",setup=1,time=3600)
         db.session.add(contesttocreate)
         db.session.commit()
         current=Contests.query.filter_by(setup=1).first().id
@@ -52,10 +52,14 @@ def login_page():
     form=LoginForm()
     if form.validate_on_submit():
         attempted_user=User.query.filter_by(username=form.username.data).first()
+        next_url=request.form.get("next")
         if attempted_user and attempted_user.check_password_correction(attempted_password=form.password.data):
             login_user(attempted_user)
             flash(f'Success! You are logged in as: {attempted_user.username}',category='success')
-            return redirect(url_for('my_contests_page'))
+            if next_url:
+                return redirect(next_url)
+            else:
+                return redirect(url_for('my_contests_page'))
         else:
             flash('Invalid username and/or password. Please try again',category='danger')
     return render_template('login.html',form=form)
@@ -149,13 +153,17 @@ def moreoptions_page(contestid):
     form=MoreOptionsForm()
     delete_form=DeleteForm()
     if form.validate_on_submit():
-        torename=Contests.query.filter_by(id=contestid).first()
-        if torename:
-            Contests.query.filter_by(id=contestid).first().name=form.rename.data
-        db.session.commit()
-        return redirect(url_for("my_contests_page"))
 
-    if delete_form.validate_on_submit():
+            torename=Contests.query.filter_by(id=contestid).first()
+            if torename:
+                Contests.query.filter_by(id=contestid).first().name=form.rename.data
+                Contests.query.filter_by(id=contestid).first().time = form.timehrs.data*3600+form.timemins.data*60+form.timesecs.data
+            db.session.commit()
+            return redirect(url_for("my_contests_page"))
+    if (form.errors != {}):
+        for err_msg in form.errors.values():
+            flash(f'{err_msg[0]}', category='danger')
+    elif delete_form.validate_on_submit():
         deleted_contest=request.form.get('deleted-contest')
         deleted_contest=Contests.query.filter_by(id=deleted_contest).first()
         if deleted_contest:
@@ -188,8 +196,9 @@ def contest_page(contestid,page):
 
 
     return render_template('contest.html',Results=Results,page=page,contest=contest,Release=Release,released=released,codedisplay=codedisplay)
-@login_required
+
 @app.route("/join/<contestcode>",methods=["GET","POST"])
+@login_required
 def join_page(contestcode):
     enterform=EnterForm()
     contest=Contests.query.filter_by(code=(contestcode))
@@ -197,16 +206,24 @@ def join_page(contestcode):
         return render_template("not-found.html")
     else:
         contest=contest.first()
-        if enterform.start.data and enterform.validate():
+        if request.method=="POST":
             if Results.query.filter_by(user=current_user.id,contest=contest.id).count()!=0:
+                et=Results.query.filter_by(user=current_user.id,contest=contest.id).first().endtime
                 db.session.delete(Results.query.filter_by(user=current_user.id,contest=contest.id).first())
-            db.session.add(Results(firstname=enterform.firstname.data,lastname=enterform.lastname.data,
-                                   email=enterform.email.data,user=current_user.id,contest=contest.id,submission="",result=""))
+                db.session.add(Results(firstname=enterform.firstname.data, lastname=enterform.lastname.data,
+                                       email=enterform.email.data, user=current_user.id, contest=contest.id,
+                                       submission="", result=""
+                                       , endtime=et))
+            else:
+                db.session.add(Results(firstname=enterform.firstname.data,lastname=enterform.lastname.data,
+                                   email=enterform.email.data,user=current_user.id,contest=contest.id,submission="",result=""
+                                   ,endtime=time.time()*1000+contest.time*1000))
             db.session.commit()
             return redirect(f"/in/{contestcode}")
         return render_template("join.html",enterform=enterform,contest=contest)
-@login_required
+
 @app.route("/join-by-code",methods=["GET","POST"])
+@login_required
 def join_by_code_page():
     form=CodeForm()
     if form.submit.data and form.validate():
@@ -217,8 +234,9 @@ def join_by_code_page():
             contest = contest.first()
             return redirect(f"/join/{form.code.data}")
     return render_template("join-by-code.html",form=form)
-@login_required
+
 @app.route("/in/<contestcode>",methods=["GET","POST"])
+@login_required
 def in_page(contestcode):
     contest = Contests.query.filter_by(code=(contestcode))
 
@@ -234,7 +252,7 @@ def in_page(contestcode):
                 entries_data.append({'answer':""})
             form.process(data={'answers':entries_data})
 
-        if form.submit.data:
+        if request.method=="POST":
             result.submission=""
             result.result=""
             result.score=0
@@ -258,7 +276,7 @@ def in_page(contestcode):
         if Results.query.filter_by(user=current_user.id,contest=contest.id).count()==0:
             return render_template("not-found.html")
         else:
-            return render_template("in.html",contest=contest,Questions=Questions,form=form)
+            return render_template("in.html",contest=contest,Questions=Questions,form=form,result=result)
 @app.route("/details/<resultid>")
 def details_page(resultid):
     result=Results.query.filter_by(id=resultid).first()

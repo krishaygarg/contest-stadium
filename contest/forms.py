@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm,Form
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, FloatField, FieldList, FormField
-from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
+from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError, InputRequired
 from contest.models import User
 class RegisterForm(FlaskForm):
 
@@ -29,7 +29,14 @@ class CreateNewForm(FlaskForm):
     submit1 = SubmitField(label="+ Create New")
 
 class MoreOptionsForm(FlaskForm):
+    def validate_timehrs(self, timehrs):
+        if timehrs.data<0:
+            raise ValidationError('Time must be positive!')
+
     rename = StringField(label="Rename", validators=[DataRequired()])
+    timehrs=IntegerField(label="Time",validators=[InputRequired()])
+    timemins = IntegerField(label="Time", validators=[InputRequired()])
+    timesecs = IntegerField(label="Time", validators=[InputRequired()])
     save = SubmitField(label="Save")
 
 class DeleteForm(FlaskForm):
@@ -63,4 +70,4 @@ class AnswerForm(Form):
     answer=StringField()
 class ContestForm(FlaskForm):
     answers=FieldList(FormField(AnswerForm))
-    submit=SubmitField(label='Submit')
+    submit1=SubmitField(label='Submit')

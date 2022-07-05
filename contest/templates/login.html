@@ -23,7 +23,11 @@ Login
 
 
 
-
+<input
+    type="hidden"
+    name="next"
+    value="{{ request.args.get('next', '') }}"
+/>
             {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
 
         </form>
