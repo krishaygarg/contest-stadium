@@ -56,7 +56,7 @@ class MoveDownForm(FlaskForm):
 class ReleaseForm(FlaskForm):
     Open=SubmitField(label="Open Contest")
     Close=SubmitField(label="Close Contest")
-    Publish=SubmitField(label="Publish to the Collection")
+    Publish=SubmitField(label="Publish to the Collection [In Progress]")
 
 class CodeForm(FlaskForm):
     code=StringField()
