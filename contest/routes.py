@@ -217,7 +217,7 @@ def join_page(contestcode):
             else:
                 db.session.add(Results(firstname=enterform.firstname.data,lastname=enterform.lastname.data,
                                    email=enterform.email.data,user=current_user.id,contest=contest.id,submission="",result=""
-                                   ,endtime=time.time()*1000+contest.time*1000))
+                                   ,endtime=time.time()*1000+contest.time*1000+2000))
             db.session.commit()
             return redirect(f"/in/{contestcode}")
         return render_template("join.html",enterform=enterform,contest=contest)
