@@ -6,11 +6,20 @@
 <div class="container">
     <h3>{{contest.name}}</h3>
     <div class="text-center">
- <div class="col-nd-6">
+<!-- TO ADD LATER
                         <div style="margin-bottom: 5px" class="card bg-dark">
                             <div class="card-body">
+<div class="col-nd-6">
+<div class="row" style="margin-top:10px; margin-left:20px; margin-bottom:10px;">
+    <div class="col-2">Instructions</div>
+    <div class="col-10">
 
-
+    </div>
+</div></div></div></div>-->
+                                         <br>
+        <div style="margin-bottom: 5px" class="card bg-dark">
+                             <div class="card-body">
+                                <div class="col-nd-6">
 <div class="row" style="margin-top:10px; margin-left:20px;">
 
                                       <div class="col-2">Question Type</div>
@@ -20,11 +29,11 @@
                                     <div class="col-1">Move</div>
 
 
-</div>
+</div></div>
 
                         </div>
                     </div>
-                    </div>
+
 <!--    <div class="row">-->
                 {%for x in range(length) %}
                 {%set question=Questions.query.filter_by(contest=contest.id, position=x).first()%}

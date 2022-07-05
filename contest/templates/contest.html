@@ -57,6 +57,37 @@
     <a class="activetab nav-link" href="{{resultslink}}">Results</a>
   </li>
 
+            <table class="table table-hover table-dark">
+    <thead>
+        <tr>
+            <!-- Your Columns HERE -->
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+
+            <th scope="col">Score</th>
+            <th scope="col">Details</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Your rows inside the table HERE: -->
+        {% for result in Results.query.filter_by(contest=contest.id) %}
+        {%set link="/details/"~result.id%}
+        <tr>
+                <td>{{result.firstname}}</td>
+                <td>{{result.lastname}}</td>
+
+                <td>{{result.score}}</td>
+                <td>
+                    <a class="btn btn-primary" href={{link}}>Details</a></td>
+
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
 
         {%endif%}
 

@@ -1,9 +1,10 @@
 from contest import app, models,forms,db
 from contest.forms import LoginForm, RegisterForm,CreateNewForm, MoreOptionsForm,DeleteForm, QuestionForm,MoveUpForm
-from contest.forms import MoveDownForm, ReleaseForm
-from contest.models import User,Contests, Questions
+from contest.forms import MoveDownForm, ReleaseForm, CodeForm, EnterForm, ContestForm
+from contest.models import User,Contests, Questions, Results
 from flask import render_template, redirect,url_for, flash, request
 from flask_login import login_user,logout_user, login_required, current_user
+from wtforms import StringField
 import random
 import os
 @app.route("/")
@@ -186,4 +187,80 @@ def contest_page(contestid,page):
         return redirect(f"/contest/{contestid}/release")
 
 
-    return render_template('contest.html',page=page,contest=contest,Release=Release,released=released,codedisplay=codedisplay)
+    return render_template('contest.html',Results=Results,page=page,contest=contest,Release=Release,released=released,codedisplay=codedisplay)
+@login_required
+@app.route("/join/<contestcode>",methods=["GET","POST"])
+def join_page(contestcode):
+    enterform=EnterForm()
+    contest=Contests.query.filter_by(code=(contestcode))
+    if contest.count()==0:
+        return render_template("not-found.html")
+    else:
+        contest=contest.first()
+        if enterform.start.data and enterform.validate():
+            if Results.query.filter_by(user=current_user.id,contest=contest.id).count()!=0:
+                db.session.delete(Results.query.filter_by(user=current_user.id,contest=contest.id).first())
+            db.session.add(Results(firstname=enterform.firstname.data,lastname=enterform.lastname.data,
+                                   email=enterform.email.data,user=current_user.id,contest=contest.id,submission="",result=""))
+            db.session.commit()
+            return redirect(f"/in/{contestcode}")
+        return render_template("join.html",enterform=enterform,contest=contest)
+@login_required
+@app.route("/join-by-code",methods=["GET","POST"])
+def join_by_code_page():
+    form=CodeForm()
+    if form.submit.data and form.validate():
+        contest = Contests.query.filter_by(code=(form.code.data))
+        if contest.count() == 0:
+            flash("Invalid Code",category="danger")
+        else:
+            contest = contest.first()
+            return redirect(f"/join/{form.code.data}")
+    return render_template("join-by-code.html",form=form)
+@login_required
+@app.route("/in/<contestcode>",methods=["GET","POST"])
+def in_page(contestcode):
+    contest = Contests.query.filter_by(code=(contestcode))
+
+    if contest.count() == 0:
+        return render_template("not-found.html")
+    else:
+        contest=contest.first()
+        result=Results.query.filter_by(user=current_user.id,contest=contest.id).first()
+        form = ContestForm()
+        if request.method=="GET":
+            entries_data=[]
+            for x in range(Questions.query.filter_by(contest=contest.id,type="Free Response Question").count()):
+                entries_data.append({'answer':""})
+            form.process(data={'answers':entries_data})
+
+        if form.submit.data:
+            result.submission=""
+            result.result=""
+            result.score=0
+            ctr=0
+            for x in range(Questions.query.filter_by(contest=contest.id).count()):
+                if Questions.query.filter_by(contest=contest.id,position=x).first().type=="Free Response Question":
+                    result.submission+=form.answers[ctr].answer.data
+                    result.submission+="#%#~"
+                    if Questions.query.filter_by(contest=contest.id, position=x).first().answer==form.answers[ctr].answer.data:
+                        result.result+="2#%#~"
+                        result.score+=1
+                    elif form.answers[ctr].answer.data=="":
+                        result.result += "1#%#~"
+                    else:
+                        result.result += "0#%#~"
+                    ctr+=1
+            db.session.commit()
+            print(result.submission)
+            print(result.result)
+            return render_template('submitted.html')
+        if Results.query.filter_by(user=current_user.id,contest=contest.id).count()==0:
+            return render_template("not-found.html")
+        else:
+            return render_template("in.html",contest=contest,Questions=Questions,form=form)
+@app.route("/details/<resultid>")
+def details_page(resultid):
+    result=Results.query.filter_by(id=resultid).first()
+    return render_template("details.html",result=result,submission=result.submission.split("#%#~"),results=result.result.split("#%#~"),
+                           Contests=Contests,Questions=Questions)

@@ -1,0 +1,44 @@
+{%extends 'base.html' %}
+{%block title%}
+{{contest.name}}
+{%endblock%}
+
+{%block content%}
+    <br>
+
+    <div class='container'>
+        <h3>{{contest.name}}</h3>
+        <form method="POST">
+            {%set ctr=namespace(value=0)%}
+        {% for x in range(Questions.query.filter_by(contest=contest.id).count()) %}
+        {% set question=Questions.query.filter_by(contest=contest.id,position=x).first()%}
+
+
+        <div class="col-nd-6">
+                        <div style="margin-bottom: 5px" class="card bg-dark">
+                            <div class="card-body">
+
+
+<div class="row text-center" style="margin-top:10px; margin-left:20px;">
+    {% if question.type=="Text"%}
+<div class="col-12">  <p class="card-text" data-align="center">{{question.question}}</p></div>
+    {%endif%}
+    {% if question.type=="Free Response Question" %}
+                                      <div class="col-10">  <p class="card-text" data-align="center">{{question.question}}</p></div>
+                                        <div class="col-2">{{form.answers[ctr.value].answer(class="form-control",placeholder="Answer")}}</div>
+    {%set ctr.value=ctr.value+1%}{%endif%}
+</div>
+
+                        </div>
+                    </div>
+                    </div>
+
+
+
+      {%endfor%}
+            <br>
+                    {{form.submit(class="btn btn-lg btn-block btn-primary")}}
+
+        </form>
+    </div>
+{%endblock%}

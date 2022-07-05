@@ -12,6 +12,7 @@ class User(db.Model,UserMixin):
     email_address=db.Column(db.String(length=50),nullable=False,unique=True)
     password_hash=db.Column(db.String(length=60),nullable=False)
     contests=db.relationship('Contests',backref='owned_user',lazy=True)
+    participated=db.relationship('Results',backref='owned_user',lazy=True)
     @property
     def prettier_budget(self):
         if len(str(self.budget))==4:
@@ -39,6 +40,7 @@ class Contests(db.Model):
     owner = db.Column(db.Integer(),db.ForeignKey('user.id'))
     type=db.Column(db.String(),nullable=False)
     questions=db.relationship('Questions',backref='owned_contest',lazy=True)
+    results = db.relationship('Results', backref='owned_contest', lazy=True)
     setup=db.Column(db.Integer())
 
 
@@ -53,3 +55,16 @@ class Questions(db.Model):
     position=db.Column(db.Integer(),nullable=False)
 
 
+class Results(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user=db.Column(db.Integer(),db.ForeignKey('user.id'))
+    firstname=db.Column(db.String())
+    lastname=db.Column(db.String())
+    email=db.Column(db.String())
+    submission=db.Column(db.String())
+    result=db.Column(db.String())
+    contest = db.Column(db.Integer(), db.ForeignKey('contests.id'))
+    score=db.Column(db.Integer())
+    # correct=db.relationship('Questions',backref='correct',lazy=True)
+    # incorrect = db.relationship('Questions', backref='incorrect', lazy=True)
+    # unanswered=db.relationship('Questions',backref='unanswered',lazy=True)

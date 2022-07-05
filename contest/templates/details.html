@@ -1,0 +1,63 @@
+{%extends 'base.html' %}
+{%block title%}
+{{result.firstname}} {{result.lastname}} Details
+{%endblock%}
+{%block content%}
+<div class="container">
+    <br>
+    <h3>Results for {{result.firstname}} {{result.lastname}}</h3>
+
+    <br>
+    First Name: {{result.firstname}} <br>
+    Last Name: {{result.lastname}}<br>
+    Email: {{result.email}} <br>
+    Score: {{result.score}}<br>
+     <table class="table table-hover table-dark">
+    <thead>
+        <tr>
+            <!-- Your Columns HERE -->
+            <th scope="col">#</th>
+            <th scope="col">Question</th>
+
+            <th scope="col">Correct Answer</th>
+            <th scope="col">Participant Answer</th>
+            <th scope="col">Result</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Your rows inside the table HERE: -->
+        {%set ctr=namespace(value=0)%}
+        {% for x in range(Questions.query.filter_by(contest=result.contest).count())%}
+        {%set question=Questions.query.filter_by(contest=result.contest,position=x).first()%}
+
+        {% if question.type=="Free Response Question" %}
+        <tr>
+                <td>{{ctr.value+1}}</td>
+                <td>{{question.question}}</td>
+
+                <td>{{question.answer}}</td>
+            <td>{{submission[ctr.value]}}</td>
+                <td>{%if results[ctr.value]=="2"%}
+                &#9989;
+                    {%endif%}
+                    {%if results[ctr.value]=="1"%}
+                &#x1F7E8;
+
+                    {%endif%}
+                    {%if results[ctr.value]=="0"%}
+                &#x274C;
+                    {%endif%}
+                </td>
+
+
+        </tr>
+        {%set ctr.value=ctr.value+1%}
+        {%endif%}
+        {% endfor %}
+
+    </tbody>
+</table>
+
+</div>
+{%endblock%}

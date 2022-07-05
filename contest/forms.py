@@ -1,5 +1,5 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, FloatField
+from flask_wtf import FlaskForm,Form
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FloatField, FieldList, FormField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from contest.models import User
 class RegisterForm(FlaskForm):
@@ -49,5 +49,18 @@ class MoveDownForm(FlaskForm):
 class ReleaseForm(FlaskForm):
     Open=SubmitField(label="Open Contest")
     Close=SubmitField(label="Close Contest")
-
     Publish=SubmitField(label="Publish to the Collection")
+
+class CodeForm(FlaskForm):
+    code=StringField()
+    submit=SubmitField(label="Join")
+class EnterForm(FlaskForm):
+    firstname=StringField(validators=[DataRequired()])
+    lastname=StringField(validators=[DataRequired()])
+    email=StringField(validators=[DataRequired()])
+    start=SubmitField(label="Start")
+class AnswerForm(Form):
+    answer=StringField()
+class ContestForm(FlaskForm):
+    answers=FieldList(FormField(AnswerForm))
+    submit=SubmitField(label='Submit')
