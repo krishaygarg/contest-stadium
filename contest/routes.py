@@ -124,7 +124,8 @@ def question_page(questionid):
                 if deleted_question:
 
                     for element in Questions.query.filter_by(contest=deleted_question.contest):
-                        element.position-=1
+                        if element.position>deleted_question.position:
+                            element.position-=1
                     db.session.delete(deleted_question)
                     db.session.commit()
                 return redirect(f"/create/{Contests.query.filter_by(id=question.contest).first().id}")
