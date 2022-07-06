@@ -152,7 +152,7 @@ def question_page(questionid):
 def moreoptions_page(contestid):
     form=MoreOptionsForm()
     delete_form=DeleteForm()
-    if form.validate_on_submit():
+    if form.save.data and form.validate():
 
             torename=Contests.query.filter_by(id=contestid).first()
             if torename:
@@ -160,10 +160,10 @@ def moreoptions_page(contestid):
                 Contests.query.filter_by(id=contestid).first().time = form.timehrs.data*3600+form.timemins.data*60+form.timesecs.data
             db.session.commit()
             return redirect(url_for("my_contests_page"))
-    if (form.errors != {}):
+    elif (form.errors != {}):
         for err_msg in form.errors.values():
             flash(f'{err_msg[0]}', category='danger')
-    elif delete_form.validate_on_submit():
+    if request.form.get('deleted-contest'):
         deleted_contest=request.form.get('deleted-contest')
         deleted_contest=Contests.query.filter_by(id=deleted_contest).first()
         if deleted_contest:
