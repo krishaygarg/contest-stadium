@@ -79,14 +79,21 @@ def create_page(contestid):
 
             if MoveUp.submit2.data and MoveUp.validate():
                 tomoveup=int(request.form.get('tomoveup'))
-                Questions.query.filter_by(position=tomoveup).first().position-=1
-                Questions.query.filter_by(position=tomoveup-1).first().position+=1
+                print(Questions.query.filter_by(position=tomoveup, contest=contestid).first().question)
+                idtochange=Questions.query.filter_by(position=tomoveup, contest=contestid).first().id
+                idtochange1 = Questions.query.filter_by(position=tomoveup-1, contest=contestid).first().id
+                Questions.query.filter_by(id=idtochange).first().position-=1
+                Questions.query.filter_by(id=idtochange1).first().position+=1
                 db.session.commit()
+                print(Questions.query.filter_by(position=tomoveup, contest=contestid).first().question)
+
                 return redirect(request.url)
             if MoveDown.submit3.data and MoveDown.validate():
                 tomovedown = int(request.form.get('tomovedown'))
-                Questions.query.filter_by(position=tomovedown).first().position += 1
-                Questions.query.filter_by(position=tomovedown + 1).first().position -= 1
+                idtochange = Questions.query.filter_by(position=tomovedown, contest=contestid).first().id
+                idtochange1 = Questions.query.filter_by(position=tomovedown + 1, contest=contestid).first().id
+                Questions.query.filter_by(id=idtochange).first().position += 1
+                Questions.query.filter_by(id=idtochange1).first().position -= 1
                 db.session.commit()
                 return redirect(request.url)
             if CreateNewForm().submit1.data and CreateNewForm().validate():
